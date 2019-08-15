@@ -34,6 +34,7 @@ OLD_PROJECT_PATH="$(realpath $1)"
 TARGET_PATH="$(realpath $2)"
 NEW_PROJECT_NAME=$3
 NEW_PROJECT_PATH="${TARGET_PATH}/${NEW_PROJECT_NAME}"
+LARAUP_DIR="$(pwd)"
 
 echo -e "${YELLOW}"
 # ASCII Art - ANSI Shadow
@@ -61,22 +62,24 @@ fi
 
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
 
-echo -e "\n\n\n --- PROJECT MIGRATION STARTS --- \n\n"
-
-echo "Copying the controllers"
+echo -e "${YELLOW}COPYING THE CONTROLLERS${NC}"
 rm -rf $NEW_PROJECT_PATH/app/Http/Controllers/*
 cp -r $OLD_PROJECT_PATH/app/controllers/* $NEW_PROJECT_PATH/app/Http/Controllers
 
-echo "Copying the views"
+echo -e "${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
 
-echo "Copying the models"
+echo -e "${YELLOW}COPYTING THE MODELS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Models
 cp -r $OLD_PROJECT_PATH/app/models/* $NEW_PROJECT_PATH/app/Models
 
-echo "Migrating routes"
+echo -e "${YELLOW}MIGRATING ROUTES${NC}"
+cd $NEW_PROJECT_PATH && composer require lesichkovm/laravel-advanced-route
 ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
 ex -snc '$-2,$d|x' $NEW_PROJECT_PATH/routes/web.php
-php routes.php $OLD_PROJECT_PATH/app/routes.php $NEW_PROJECT_PATH/routes
+php $LARAUP_DIR/routes.php $OLD_PROJECT_PATH/app/routes.php $NEW_PROJECT_PATH/routes
 echo -e "});" >> $NEW_PROJECT_PATH/routes/api.php
+
+sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/routes/api.php
+sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/routes/web.php
