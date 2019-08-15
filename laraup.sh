@@ -35,6 +35,18 @@ TARGET_PATH="$(realpath $2)"
 NEW_PROJECT_NAME=$3
 NEW_PROJECT_PATH="${TARGET_PATH}/${NEW_PROJECT_NAME}"
 
+echo -e "${YELLOW}"
+# ASCII Art - ANSI Shadow
+cat << "EOF"
+██╗      █████╗ ██████╗  █████╗ ██╗   ██╗██████╗
+██║     ██╔══██╗██╔══██╗██╔══██╗██║   ██║██╔══██╗
+██║     ███████║██████╔╝███████║██║   ██║██████╔╝
+██║     ██╔══██║██╔══██╗██╔══██║██║   ██║██╔═══╝
+███████╗██║  ██║██║  ██║██║  ██║╚██████╔╝██║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝
+EOF
+echo -e "${NC}"
+
 echo -e "Path to old Laravel 4.2 project:\t\t${GREEN}${OLD_PROJECT_PATH}${NC}"
 echo -e "Target directory for the new project:\t\t${GREEN}${TARGET_PATH}${NC}"
 echo -e "Name of new Laravel 5.8 project:\t\t${GREEN}${NEW_PROJECT_NAME}${NC}\n"
@@ -59,8 +71,12 @@ echo "Copying the views"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
 
+echo "Copying the models"
+mkdir -p $NEW_PROJECT_PATH/app/Models
+cp -r $OLD_PROJECT_PATH/app/models/* $NEW_PROJECT_PATH/app/Models
+
 echo "Migrating routes"
 ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
 ex -snc '$-2,$d|x' $NEW_PROJECT_PATH/routes/web.php
 php routes.php $OLD_PROJECT_PATH/app/routes.php $NEW_PROJECT_PATH/routes
-echo -e "});" >> $NEW_PROJECT_PATH/routes/api.php 
+echo -e "});" >> $NEW_PROJECT_PATH/routes/api.php
