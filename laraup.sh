@@ -40,11 +40,27 @@ echo -e "Target directory for the new project:\t\t${GREEN}${TARGET_PATH}${NC}"
 echo -e "Name of new Laravel 5.8 project:\t\t${GREEN}${NEW_PROJECT_NAME}${NC}\n"
 
 if [[ ! -e $TARGET_PATH ]]; then
-    mkdir -p $TARGET_PATH
-    echo -e "${GREEN}Created directory ${TARGET_PATH}${NC}"
+  mkdir -p $TARGET_PATH
+  echo -e "${GREEN}Created directory ${TARGET_PATH}${NC}"
 elif [[ ! -d $TARGET_PATH ]]; then
-    echo -e >&2 "${RED}${TARGET_PATH} already exists but is not a directory${NC}"
-    exit 1
+  echo -e >&2 "${RED}${TARGET_PATH} already exists but is not a directory${NC}"
+  exit 1
 fi
 
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
+
+echo -e "\n\n\n --- PROJECT MIGRATION STARTS --- \n\n"
+
+echo "Copying the controllers"
+rm -rf $NEW_PROJECT_PATH/app/Http/Controllers/*
+cp -r $OLD_PROJECT_PATH/app/controllers/* $NEW_PROJECT_PATH/app/Http/Controllers
+
+echo "Copying the views"
+rm -rf $NEW_PROJECT_PATH/resources/views/*
+cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
+
+echo "Migrating routes"
+ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
+ex -snc '$-2,$d|x' $NEW_PROJECT_PATH/routes/web.php
+php routes.php $OLD_PROJECT_PATH/app/routes.php $NEW_PROJECT_PATH/routes
+echo -e "});" >> $NEW_PROJECT_PATH/routes/api.php 
