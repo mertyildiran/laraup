@@ -26,6 +26,26 @@ EOF
   echo "$MSG"
 }
 
+fix_the_namespace_of_file () {
+  filename=$1
+  [ -f "$filename" ] || continue
+  filename_dir=$(dirname "${filename}")
+  filename_base=$(basename "${filename}")
+  namespace_dir=${filename_dir#"$NEW_PROJECT_PATH/"}
+
+  namespace=""
+  IFS='/' read -ra ADDR <<< "$namespace_dir"
+  for i in "${ADDR[@]}"; do
+    [ -z "$namespace" ] || namespace="${namespace}\\\\"
+    namespace="${namespace}${i^}"
+  done
+
+  echo -e "${YELLOW}Fixing the namespace of ${namespace_dir}/${filename_base}${NC}";
+  sed -i '/^namespace/d' $filename
+  sed -i "1 anamespace ${namespace};" $filename
+  sed -i '1 a\\' $filename
+}
+
 [ -z ${1+x} ] && die "${RED}Argument 1 required, $# provided${NC}"
 [ -z ${2+x} ] && die "${RED}Argument 2 required, $# provided${NC}"
 [ -z ${3+x} ] && die "${RED}Argument 3 required, $# provided${NC}"
@@ -62,19 +82,30 @@ fi
 
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
 
-echo -e "${YELLOW}COPYING THE CONTROLLERS${NC}"
+echo -e "\n${YELLOW}COPYING THE CONTROLLERS${NC}"
 rm -rf $NEW_PROJECT_PATH/app/Http/Controllers/*
 cp -r $OLD_PROJECT_PATH/app/controllers/* $NEW_PROJECT_PATH/app/Http/Controllers
 
-echo -e "${YELLOW}COPYING THE VIEWS${NC}"
+for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers -name '*.php'); do
+  fix_the_namespace_of_file $filename
+done
+
+
+echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
 
-echo -e "${YELLOW}COPYTING THE MODELS${NC}"
+
+echo -e "\n${YELLOW}COPYING THE MODELS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Models
 cp -r $OLD_PROJECT_PATH/app/models/* $NEW_PROJECT_PATH/app/Models
 
-echo -e "${YELLOW}MIGRATING ROUTES${NC}"
+for filename in $(find $NEW_PROJECT_PATH/app/Models -name '*.php'); do
+  fix_the_namespace_of_file $filename
+done
+
+
+echo -e "\n${YELLOW}MIGRATING ROUTES${NC}"
 cd $NEW_PROJECT_PATH && composer require lesichkovm/laravel-advanced-route
 ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
 ex -snc '$-2,$d|x' $NEW_PROJECT_PATH/routes/web.php
