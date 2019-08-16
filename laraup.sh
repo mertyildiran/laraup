@@ -46,6 +46,24 @@ fix_the_namespace_of_file () {
   sed -i '1 a\\' $filename
 }
 
+fix_the_blade_tags () {
+  filename=$1
+  [ -f "$filename" ] || continue
+  filename_dir=$(dirname "${filename}")
+  filename_base=$(basename "${filename}")
+  namespace_dir=${filename_dir#"$NEW_PROJECT_PATH/"}
+
+  namespace=""
+  IFS='/' read -ra ADDR <<< "$namespace_dir"
+  for i in "${ADDR[@]}"; do
+    [ -z "$namespace" ] || namespace="${namespace}\\\\"
+    namespace="${namespace}${i^}"
+  done
+
+  echo -e "${YELLOW}Fixing the Blade tags in ${namespace_dir}/${filename_base}${NC}";
+  php blade.php $filename
+}
+
 [ -z ${1+x} ] && die "${RED}Argument 1 required, $# provided${NC}"
 [ -z ${2+x} ] && die "${RED}Argument 2 required, $# provided${NC}"
 [ -z ${3+x} ] && die "${RED}Argument 3 required, $# provided${NC}"
@@ -95,6 +113,9 @@ echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
 
+for filename in $(find $NEW_PROJECT_PATH/resources/views -name '*.php'); do
+  fix_the_blade_tags $filename
+done
 
 echo -e "\n${YELLOW}COPYING THE MODELS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Models
