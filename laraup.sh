@@ -123,6 +123,14 @@ sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/route
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Migrate the routes"
 
 
+echo -e "\n${YELLOW}COPYING app/helpers.php${NC}"
+cp -r $OLD_PROJECT_PATH/app/helpers.php $NEW_PROJECT_PATH/app/
+ex -e -s -c ":%s/function info/function info_deprecated/g" $NEW_PROJECT_PATH/app/helpers.php -c wq
+php $LARAUP_DIR/composer.php $NEW_PROJECT_PATH
+cd $NEW_PROJECT_PATH && composer dump-autoload
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy app/helpers.php"
+
+
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
 #  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
 #  && git add -A . && git commit -m "Composer require cartalyst/sentry:dev-feature/laravel-5"
