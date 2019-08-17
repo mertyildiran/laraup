@@ -64,6 +64,26 @@ fix_the_blade_tags () {
   php $LARAUP_DIR/blade.php $filename
 }
 
+fix_the_base_controller () {
+  filename=$1
+  [ -f "$filename" ] || continue
+  filename_dir=$(dirname "${filename}")
+  filename_base=$(basename "${filename}")
+  namespace_dir=${filename_dir#"$NEW_PROJECT_PATH/"}
+
+  namespace=""
+  IFS='/' read -ra ADDR <<< "$namespace_dir"
+  for i in "${ADDR[@]}"; do
+    [ -z "$namespace" ] || namespace="${namespace}\\\\"
+    namespace="${namespace}${i^}"
+  done
+
+  echo -e "${YELLOW}Fixing the base controller ${namespace_dir}/${filename_base}${NC}";
+  sed -i "3 ause Illuminate\\\\Routing\\\\Controller;" $filename
+  sed -i '3 a\\' $filename
+  cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the base controller ${namespace_dir}/${filename_base}"
+}
+
 [ -z ${1+x} ] && die "${RED}Argument 1 required, $# provided${NC}"
 [ -z ${2+x} ] && die "${RED}Argument 2 required, $# provided${NC}"
 [ -z ${3+x} ] && die "${RED}Argument 3 required, $# provided${NC}"
@@ -98,8 +118,10 @@ elif [[ ! -d $TARGET_PATH ]]; then
   exit 1
 fi
 
+
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
 cd $NEW_PROJECT_PATH && git init && git add -A . && git commit -m "Bring in Laravel 5.8 base"
+
 
 echo -e "\n${YELLOW}COPYING THE CONTROLLERS${NC}"
 rm -rf $NEW_PROJECT_PATH/app/Http/Controllers/*
@@ -111,6 +133,11 @@ for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers -name '*.php'); do
 done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the namespaces of the controllers"
 
+for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec grep -l "extends Controller" {} \;); do
+  fix_the_base_controller $filename
+done
+
+
 echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
@@ -120,6 +147,7 @@ for filename in $(find $NEW_PROJECT_PATH/resources/views -name '*.php'); do
   fix_the_blade_tags $filename
 done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the Blade tags"
+
 
 echo -e "\n${YELLOW}COPYING THE MODELS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Models
