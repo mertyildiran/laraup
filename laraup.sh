@@ -112,6 +112,17 @@ done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the namespaces of the models"
 
 
+echo -e "\n${YELLOW}COPYING THE MIGRATIONS${NC}"
+rm $NEW_PROJECT_PATH/database/migrations/*
+cp -r $OLD_PROJECT_PATH/app/database/migrations/* $NEW_PROJECT_PATH/database/migrations
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations"
+
+
+echo -e "\n${YELLOW}COPYING THE PUBLIC FILES${NC}"
+rsync -a $OLD_PROJECT_PATH/public/* $NEW_PROJECT_PATH/public/ --exclude=index.php --exclude=.htaccess
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations"
+
+
 echo -e "\n${YELLOW}MIGRATING ROUTES${NC}"
 cd $NEW_PROJECT_PATH && composer require lesichkovm/laravel-advanced-route
 ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
