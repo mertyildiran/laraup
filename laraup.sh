@@ -81,6 +81,11 @@ for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec gre
   fix_the_base_controller $filename
 done
 
+for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec grep -l "extends \\\\BaseController" {} \;); do
+  fix_the_controller_extends_from_base_controller $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the controllers that extends from Laravel's base controller"
+
 
 echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
@@ -118,10 +123,10 @@ sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/route
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Migrate the routes"
 
 
-cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
-  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
-  && git add -A . && git commit -m "Composer require cartalyst/sentry:dev-feature/laravel-5"
+#cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
+#  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
+#  && git add -A . && git commit -m "Composer require cartalyst/sentry:dev-feature/laravel-5"
 
-cd $NEW_PROJECT_PATH && php artisan make:middleware SentryAuth \
-  && git add -A . && git commit -m "Create SentryAuth middleware"
+#cd $NEW_PROJECT_PATH && php artisan make:middleware SentryAuth \
+#  && git add -A . && git commit -m "Create SentryAuth middleware"
 
