@@ -92,6 +92,9 @@ for filename in $(find $NEW_PROJECT_PATH/resources/views -name '*.php'); do
 done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the Blade tags"
 
+cd $NEW_PROJECT_PATH && composer require laravelcollective/html && \
+  git add -A . && git commit -m "Composer require laravelcollective/html"
+
 
 echo -e "\n${YELLOW}COPYING THE MODELS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Models
@@ -113,3 +116,12 @@ echo -e "});" >> $NEW_PROJECT_PATH/routes/api.php
 sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/routes/api.php
 sed -i 's/Route::controller/AdvancedRoute::controller/g' $NEW_PROJECT_PATH/routes/web.php
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Migrate the routes"
+
+
+cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
+  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
+  && git add -A . && git commit -m "Composer require cartalyst/sentry:dev-feature/laravel-5"
+
+cd $NEW_PROJECT_PATH && php artisan make:middleware SentryAuth \
+  && git add -A . && git commit -m "Create SentryAuth middleware"
+
