@@ -113,6 +113,9 @@ for filename in $(find $NEW_PROJECT_PATH/app/Models -name '*.php'); do
 done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the namespaces of the models"
 
+find $NEW_PROJECT_PATH/app/Models/ -type f -exec sed -i 's/SoftDeletingTrait/SoftDeletes/g' {} +
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Rename SoftDeletingTrait usages as SoftDeletes in app/Models/"
+
 
 echo -e "\n${YELLOW}COPYING THE MIGRATIONS & SEEDS${NC}"
 rm $NEW_PROJECT_PATH/database/migrations/*
