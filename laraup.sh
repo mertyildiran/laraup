@@ -66,7 +66,7 @@ fi
 
 
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
-cd $NEW_PROJECT_PATH && git init && git add -A . && git commit -m "Bring in Laravel 5.8 base"
+cp -r $OLD_PROJECT_PATH/.git $NEW_PROJECT_PATH && cd $NEW_PROJECT_PATH && git checkout -b laravel-5-upgrade && git add -A . && git commit -m "Bring in Laravel 5.8 base"
 
 
 echo -e "\n${YELLOW}COPYING THE CONTROLLERS${NC}"
