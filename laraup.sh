@@ -66,6 +66,7 @@ elif [[ ! -d $NEW_PROJECT_PATH ]]; then
   exit 1
 fi
 
+cd $OLD_PROJECT_PATH && composer install
 
 composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || { echo -e "${RED}New Laravel project cloudn't be created, check the above message or your composer installation${NC}" ; exit 1; }
 cp -r $OLD_PROJECT_PATH/.git $NEW_PROJECT_PATH && cd $NEW_PROJECT_PATH && git checkout -b laravel-5-upgrade && git add -A . && git commit -m "Bring in Laravel 5.8 base"
@@ -206,6 +207,8 @@ echo -e "\n${YELLOW}COPYING THE CONFIGURATION FILES${NC}"
 rsync -r --ignore-existing $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the configuration files"
 
+php $LARAUP_DIR/config.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix config/app.php file"
 
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
 #  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
