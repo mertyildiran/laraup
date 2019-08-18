@@ -144,6 +144,11 @@ rsync -a $OLD_PROJECT_PATH/app/lang/* $NEW_PROJECT_PATH/resources/lang/
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the language files"
 
 
+echo -e "\n${YELLOW}COPYING THE TESTS${NC}"
+rsync -a $OLD_PROJECT_PATH/app/tests/* $NEW_PROJECT_PATH/tests/
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the tests"
+
+
 echo -e "\n${YELLOW}MIGRATING ROUTES${NC}"
 cd $NEW_PROJECT_PATH && composer require lesichkovm/laravel-advanced-route
 ex -snc '$-1,$d|x' $NEW_PROJECT_PATH/routes/api.php
