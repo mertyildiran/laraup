@@ -203,7 +203,7 @@ cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy .env files"
 
 
 echo -e "\n${YELLOW}COPYING THE CONFIGURATION FILES${NC}"
-rsync -Ir $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php
+rsync -r --ignore-existing $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the configuration files"
 
 
