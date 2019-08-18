@@ -123,35 +123,10 @@ cp -r $OLD_PROJECT_PATH/app/database/migrations/* $NEW_PROJECT_PATH/database/mig
 rsync -a $OLD_PROJECT_PATH/app/database/seeds/* $NEW_PROJECT_PATH/database/seeds/ --exclude=DatabaseSeeder.php
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations and seeds"
 
-for filename in $(find $NEW_PROJECT_PATH/database/migrations -name '*.php'); do
-  fix_the_migration $filename
-done
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the migrations"
-
-for filename in $(find $NEW_PROJECT_PATH/database/seeds -name '*.php' ! -name 'DatabaseSeeder.php'); do
-  fix_the_seed $filename
-done
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the seeds"
-
 
 echo -e "\n${YELLOW}COPYING THE PUBLIC FILES${NC}"
 rsync -a $OLD_PROJECT_PATH/public/* $NEW_PROJECT_PATH/public/ --exclude=index.php --exclude=.htaccess
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the public files"
-
-
-echo -e "\n${YELLOW}COPYING THE LANGUAGE FILES${NC}"
-rsync -a $OLD_PROJECT_PATH/app/lang/* $NEW_PROJECT_PATH/resources/lang/
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the language files"
-
-
-echo -e "\n${YELLOW}COPYING THE TESTS${NC}"
-rsync -a $OLD_PROJECT_PATH/app/tests/* $NEW_PROJECT_PATH/tests/
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the tests"
-
-
-echo -e "\n${YELLOW}COPYING .env files${NC}"
-yes | cp -rf $OLD_PROJECT_PATH/.env* $NEW_PROJECT_PATH/
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy .env files"
 
 
 echo -e "\n${YELLOW}MIGRATING ROUTES${NC}"
@@ -199,6 +174,37 @@ find $NEW_PROJECT_PATH/app/Console/Commands/ -type f -exec sed -i 's/public func
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Rename the methods named fire() to handle() in Artisan commands"
 
 
+echo -e "\n${YELLOW}FIXING THE MIGRATIONS & SEEDS${NC}"
+
+for filename in $(find $NEW_PROJECT_PATH/database/migrations -name '*.php'); do
+  fix_the_migration $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the migrations"
+
+for filename in $(find $NEW_PROJECT_PATH/database/seeds -name '*.php' ! -name 'DatabaseSeeder.php'); do
+  fix_the_seed $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the seeds"
+
+
+echo -e "\n${YELLOW}COPYING THE LANGUAGE FILES${NC}"
+rsync -a $OLD_PROJECT_PATH/app/lang/* $NEW_PROJECT_PATH/resources/lang/
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the language files"
+
+
+echo -e "\n${YELLOW}COPYING THE TESTS${NC}"
+rsync -a $OLD_PROJECT_PATH/app/tests/* $NEW_PROJECT_PATH/tests/
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the tests"
+
+
+echo -e "\n${YELLOW}COPYING .env files${NC}"
+yes | cp -rf $OLD_PROJECT_PATH/.env* $NEW_PROJECT_PATH/
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy .env files"
+
+
+echo -e "\n${YELLOW}COPYING THE CONFIGURATION FILES${NC}"
+rsync -Ir $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the configuration files"
 
 
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
