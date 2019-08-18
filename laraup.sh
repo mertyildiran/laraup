@@ -88,6 +88,7 @@ done
 find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/extends \\BaseController/extends BaseController/g' {} +
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the controllers that incorrectly trying to extend from base controller"
 
+
 echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
 cp -r $OLD_PROJECT_PATH/app/views/* $NEW_PROJECT_PATH/resources/views
@@ -164,6 +165,22 @@ cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Turn filters into middlew
 echo -e "\n${YELLOW}FIXING THE ADDITIONAL ISSUES IN THE CONTROLLERS${NC}"
 find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/App::make\(.*\);/app();/g' {} +
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the additional issues in the controllers"
+
+
+echo -e "\n${YELLOW}COPYING ARTISAN COMMANDS${NC}"
+mkdir -p $NEW_PROJECT_PATH/app/Console/Commands
+cp -r $OLD_PROJECT_PATH/app/commands/* $NEW_PROJECT_PATH/app/Console/Commands
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy Artisan commands"
+
+for filename in $(find $NEW_PROJECT_PATH/app/Console/Commands -name '*.php'); do
+  fix_the_namespace_of_file $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the namespaces of Artisan commands"
+
+find $NEW_PROJECT_PATH/app/Console/Commands/ -type f -exec sed -i 's/public function fire()/public function handle()/g' {} +
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Rename the methods named fire() to handle() in Artisan commands"
+
+
 
 
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
