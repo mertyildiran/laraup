@@ -113,10 +113,11 @@ done
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the namespaces of the models"
 
 
-echo -e "\n${YELLOW}COPYING THE MIGRATIONS${NC}"
+echo -e "\n${YELLOW}COPYING THE MIGRATIONS & SEEDS${NC}"
 rm $NEW_PROJECT_PATH/database/migrations/*
 cp -r $OLD_PROJECT_PATH/app/database/migrations/* $NEW_PROJECT_PATH/database/migrations
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations"
+rsync -a $OLD_PROJECT_PATH/app/database/seeds/* $NEW_PROJECT_PATH/database/seeds/ --exclude=DatabaseSeeder.php
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations and seeds"
 
 
 echo -e "\n${YELLOW}COPYING THE PUBLIC FILES${NC}"
