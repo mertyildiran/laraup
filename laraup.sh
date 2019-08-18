@@ -141,6 +141,8 @@ cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy app/helpers.php"
 
 echo -e "\n${YELLOW}TURNING FILTERS INTO MIDDLEWARES${NC}"
 php $LARAUP_DIR/filters.php $OLD_PROJECT_PATH/app/filters.php $NEW_PROJECT_PATH
+find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/beforeFilter(/middleware(/g' {} +
+find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/afterFilter(/middleware(/g' {} +
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Turn filters into middlewares"
 
 
