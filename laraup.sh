@@ -21,9 +21,9 @@ die () {
 help () {
   read -r -d '' MSG << EOF
 USAGE:
-  ./laraup.sh PATH_TO_LARAVEL_4.2 PATH_TO_NEW_LARAVEL_5.8_PROJECT NEW_LARAVEL_5.8_PROJECT_NAME
+  ./laraup.sh PATH_TO_OLD_LARAVEL_4.2_PROJECT PATH_TO_NEW_LARAVEL_5.8_PROJECT
 EXAMPLE:
-  ./laraup.sh ../todo-app ../upgrade/ todo-app5
+  ./laraup.sh ../todo-app ../upgrade/todo-app5
 EOF
 
   echo "$MSG"
@@ -37,6 +37,8 @@ source $(dirname $0)/library.sh
 OLD_PROJECT_PATH="$(realpath $1)"
 NEW_PROJECT_PATH="$(realpath $2)"
 LARAUP_DIR="$(pwd)"
+
+php $LARAUP_DIR/check.php $OLD_PROJECT_PATH 4.2 || die "${RED}Your Laravel version is not 4.2${NC}"
 
 clear
 echo -e "${YELLOW}"
