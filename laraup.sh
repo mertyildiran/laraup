@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # This Bash script upgrades a Laravel 4.2 project to Laravel 5.8
+VERSION=0.1.0
+AUTHOR='M. Mert Yildiran'
+HOMEPAGE='https://github.com/mertyildiran/laraup'
 
 # Terminal colors
 RED='\033[0;31m'
@@ -39,17 +42,19 @@ clear
 echo -e "${YELLOW}"
 # ASCII Art - ANSI Shadow
 cat << "EOF"
-██╗      █████╗ ██████╗  █████╗ ██╗   ██╗██████╗
-██║     ██╔══██╗██╔══██╗██╔══██╗██║   ██║██╔══██╗
-██║     ███████║██████╔╝███████║██║   ██║██████╔╝
-██║     ██╔══██║██╔══██╗██╔══██║██║   ██║██╔═══╝
-███████╗██║  ██║██║  ██║██║  ██║╚██████╔╝██║
-╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝
+  ██╗      █████╗ ██████╗  █████╗ ██╗   ██╗██████╗
+  ██║     ██╔══██╗██╔══██╗██╔══██╗██║   ██║██╔══██╗
+  ██║     ███████║██████╔╝███████║██║   ██║██████╔╝
+  ██║     ██╔══██║██╔══██╗██╔══██║██║   ██║██╔═══╝
+  ███████╗██║  ██║██║  ██║██║  ██║╚██████╔╝██║
+  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝
 EOF
 echo -e "${NC}"
 
-echo -e "Path to old Laravel 4.2 project:\t\t${GREEN}${OLD_PROJECT_PATH}${NC}"
-echo -e "Path to new Laravel 5.8 project:\t\t${GREEN}${NEW_PROJECT_PATH}${NC}\n"
+echo -e "Version: ${YELLOW}${VERSION}${NC}    Author: ${YELLOW}${AUTHOR}${NC}    Homepage: ${YELLOW}${HOMEPAGE}${NC}\n"
+
+echo -e "Path to old Laravel 4.2 project:\t${GREEN}${OLD_PROJECT_PATH}${NC}"
+echo -e "Path to new Laravel 5.8 project:\t${GREEN}${NEW_PROJECT_PATH}${NC}\n"
 
 if [[ ! -e $NEW_PROJECT_PATH ]]; then
   mkdir -p $NEW_PROJECT_PATH
@@ -78,11 +83,8 @@ for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec gre
   fix_the_base_controller $filename
 done
 
-for filename in $(find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec grep -l "extends \\\\BaseController" {} \;); do
-  fix_the_controller_extends_from_base_controller $filename
-done
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the controllers that extends from Laravel's base controller"
-
+find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/extends \\BaseController/extends BaseController/g' {} +
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the controllers that incorrectly trying to extend from base controller"
 
 echo -e "\n${YELLOW}COPYING THE VIEWS${NC}"
 rm -rf $NEW_PROJECT_PATH/resources/views/*
@@ -144,6 +146,11 @@ php $LARAUP_DIR/filters.php $OLD_PROJECT_PATH/app/filters.php $NEW_PROJECT_PATH
 find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/beforeFilter(/middleware(/g' {} +
 find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/afterFilter(/middleware(/g' {} +
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Turn filters into middlewares"
+
+
+echo -e "\n${YELLOW}FIXING THE ADDITIONAL ISSUES IN THE CONTROLLERS${NC}"
+find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/App::make\(.*\);/app();/g' {} +
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the additional issues in the controllers"
 
 
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
