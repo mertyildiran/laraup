@@ -11,34 +11,16 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-die () {
-  echo -e >&2 "$@"
-  printf "\n"
-  help
-  exit 1
-}
-
-help () {
-  read -r -d '' MSG << EOF
-USAGE:
-  ./laraup.sh PATH_TO_OLD_LARAVEL_4.2_PROJECT PATH_TO_NEW_LARAVEL_5.8_PROJECT
-EXAMPLE:
-  ./laraup.sh ../todo-app ../upgrade/todo-app5
-EOF
-
-  echo "$MSG"
-}
-
 source $(dirname $0)/library.sh
 
-[ -z ${1+x} ] && die "${RED}Argument 1 required, $# provided${NC}"
-[ -z ${2+x} ] && die "${RED}Argument 2 required, $# provided${NC}"
+[ -z ${1+x} ] && help_die "${RED}Argument 1 required, $# provided${NC}"
+[ -z ${2+x} ] && help_die "${RED}Argument 2 required, $# provided${NC}"
 
 OLD_PROJECT_PATH="$(realpath $1)"
 NEW_PROJECT_PATH="$(realpath $2)"
 LARAUP_DIR="$(pwd)"
 
-php $LARAUP_DIR/check.php $OLD_PROJECT_PATH 4.2 || die "${RED}Your Laravel version is not 4.2${NC}"
+php $LARAUP_DIR/check.php $OLD_PROJECT_PATH 4.2 || help_die "${RED}Your Laravel version is not 4.2${NC}"
 
 clear
 echo -e "${YELLOW}"
@@ -217,10 +199,9 @@ rsync -r --ignore-existing $OLD_PROJECT_PATH/*.md $NEW_PROJECT_PATH/
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the remaining files"
 
 
-#cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
-#  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
-#  && git add -A . && git commit -m "Composer require cartalyst/sentry:dev-feature/laravel-5"
+cd $NEW_PROJECT_PATH && composer dump-autoload || die "\n${RED}New Composer packages couldn't be installed because \"composer dump-autoload\" is failed. This was the last step of the upgrade. Fix this issue and run:\nphp ${LARAUP_DIR}/composer.php ${OLD_PROJECT_PATH} ${NEW_PROJECT_PATH}${NC}"
+echo -e "\n${YELLOW}INSTALLING NEW COMPOSER PACKAGES${NC}"
+php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Install new Composer packages"
 
-#cd $NEW_PROJECT_PATH && php artisan make:middleware SentryAuth \
-#  && git add -A . && git commit -m "Create SentryAuth middleware"
-
+echo -e "\n\n${GREEN}Congragulations! \\( ﾟヮﾟ)/ Your Laravel 4.2 project has been upgraded successfully. You can find your upgraded project in here:${NC} ${NEW_PROJECT_PATH}\n"

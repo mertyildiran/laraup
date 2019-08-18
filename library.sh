@@ -1,5 +1,30 @@
 #!/bin/bash
 
+help_die () {
+  echo -e >&2 "$@"
+  printf "\n"
+  help
+  exit 1
+}
+
+help () {
+  read -r -d '' MSG << EOF
+USAGE:
+  ./laraup.sh PATH_TO_OLD_LARAVEL_4.2_PROJECT PATH_TO_NEW_LARAVEL_5.8_PROJECT
+EXAMPLE:
+  ./laraup.sh ../todo-app ../upgrade/todo-app5
+EOF
+
+  echo "$MSG"
+}
+
+die () {
+  echo -e >&2 "$@"
+  printf "\n"
+  exit 1
+}
+
+
 fix_the_namespace_of_file () {
   filename=$1
   [ -f "$filename" ] || continue
