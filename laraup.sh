@@ -119,10 +119,20 @@ cp -r $OLD_PROJECT_PATH/app/database/migrations/* $NEW_PROJECT_PATH/database/mig
 rsync -a $OLD_PROJECT_PATH/app/database/seeds/* $NEW_PROJECT_PATH/database/seeds/ --exclude=DatabaseSeeder.php
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations and seeds"
 
+for filename in $(find $NEW_PROJECT_PATH/database/migrations -name '*.php'); do
+  fix_the_migration $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the migrations"
+
+for filename in $(find $NEW_PROJECT_PATH/database/seeds -name '*.php' ! -name 'DatabaseSeeder.php'); do
+  fix_the_seed $filename
+done
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the seeds"
+
 
 echo -e "\n${YELLOW}COPYING THE PUBLIC FILES${NC}"
 rsync -a $OLD_PROJECT_PATH/public/* $NEW_PROJECT_PATH/public/ --exclude=index.php --exclude=.htaccess
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the migrations"
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the public files"
 
 
 echo -e "\n${YELLOW}MIGRATING ROUTES${NC}"
