@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This Bash script upgrades a Laravel 4.2 project to Laravel 5.8
+# This Bash script automatically upgrades your Laravel 4.2 project to 5.8
 VERSION=0.1.0
 AUTHOR='M. Mert Yildiran'
 HOMEPAGE='https://github.com/mertyildiran/laraup'
@@ -143,6 +143,13 @@ find $NEW_PROJECT_PATH/app/Http/Controllers/ -type f -exec sed -i 's/App::make\(
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix the additional issues in the controllers"
 
 
+cd $NEW_PROJECT_PATH && composer dump-autoload || die "\n${RED}New Composer packages couldn't be installed because \"composer dump-autoload\" is failed. Fix this issue and continue to run ${LARAUP_DIR}/laraup.sh from line: ${LINENO}${NC}"
+echo -e "\n${YELLOW}INSTALLING NEW COMPOSER PACKAGES${NC}"
+echo -e "${YELLOW}CAUTION: If you have added some secret repositories then you might have to enter your passphrase a few times on this step. So don't just assume that's an infinite loop.${NC}"
+php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Install new Composer packages"
+
+
 echo -e "\n${YELLOW}COPYING ARTISAN COMMANDS${NC}"
 mkdir -p $NEW_PROJECT_PATH/app/Console/Commands
 cp -r $OLD_PROJECT_PATH/app/commands/* $NEW_PROJECT_PATH/app/Console/Commands
@@ -198,10 +205,4 @@ rsync -a --exclude={'.git','app','bootstrap','public','vendor','.env*','artisan'
 rsync -r --ignore-existing $OLD_PROJECT_PATH/*.md $NEW_PROJECT_PATH/
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the remaining files"
 
-
-cd $NEW_PROJECT_PATH && composer dump-autoload || die "\n${RED}New Composer packages couldn't be installed because \"composer dump-autoload\" is failed. This was the last step of the upgrade. Fix this issue and run:\nphp ${LARAUP_DIR}/composer.php ${OLD_PROJECT_PATH} ${NEW_PROJECT_PATH}${NC}"
-echo -e "\n${YELLOW}INSTALLING NEW COMPOSER PACKAGES${NC}"
-php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
-cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Install new Composer packages"
-
-echo -e "\n\n${GREEN}Congragulations! \\( ﾟヮﾟ)/ Your Laravel 4.2 project has been upgraded successfully. You can find your upgraded project in here:${NC} ${NEW_PROJECT_PATH}\n"
+echo -e "\n\n${GREEN}Congragulations! \\( ﾟヮﾟ)/ Your Laravel 4.2 project has been upgraded to 5.8 successfully. You can find your upgraded project in here:${NC} ${NEW_PROJECT_PATH}\n"

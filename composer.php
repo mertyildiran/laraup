@@ -18,13 +18,19 @@ file_put_contents($new_composer_json_file_path, json_encode($new_composer_array,
 $require = $old_composer_array['require'];
 $require_dev = $old_composer_array['require-dev'];
 
+$commands_to_execute = [
+  "cd ".$new_project_path." && composer require",
+  "cd ".$new_project_path." && composer require --dev"
+];
+
 foreach ($require as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else if ($package === 'cartalyst/sentry') {
-    shell_exec("cd ".$new_project_path." && composer require cartalyst/sentry:dev-feature/laravel-5 && php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"");
+    $commands_to_execute[0] = $commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5";
+    array_push($commands_to_execute, "php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"");
   } else {
-    shell_exec("cd ".$new_project_path." && composer require ".$package);
+    $commands_to_execute[0] = $commands_to_execute[0]." ".$package;
   }
 }
 
@@ -32,9 +38,12 @@ foreach ($require_dev as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else {
-    shell_exec("cd ".$new_project_path." && composer require --dev ".$package);
+    $commands_to_execute[1] = $commands_to_execute[1]." ".$package;
   }
 }
 
+foreach ($commands_to_execute as $command) {
+  shell_exec($command);
+}
 
 ?>

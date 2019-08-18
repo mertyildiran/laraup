@@ -1,6 +1,6 @@
 # LaraUp
 
-Upgrades an old Laravel 4.2 project to Laravel 5.8
+Automatically upgrades your old Laravel 4.2 project to 5.8
 
 ### Usage
 
