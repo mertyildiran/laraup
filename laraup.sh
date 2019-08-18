@@ -60,7 +60,7 @@ echo -e "Path to new Laravel 5.8 project:\t${GREEN}${NEW_PROJECT_PATH}${NC}\n"
 
 if [[ ! -e $NEW_PROJECT_PATH ]]; then
   mkdir -p $NEW_PROJECT_PATH
-  echo -e "${GREEN}Created directory ${NEW_PROJECT_PATH}${NC}"
+  echo -e "${GREEN}Created directory ${NEW_PROJECT_PATH}${NC}\n"
 elif [[ ! -d $NEW_PROJECT_PATH ]]; then
   echo -e >&2 "${RED}${NEW_PROJECT_PATH} already exists but is not a directory${NC}"
   exit 1
@@ -209,6 +209,13 @@ cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the configuration fi
 
 php $LARAUP_DIR/config.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
 cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Fix config/app.php file"
+
+
+echo -e "\n${YELLOW}COPYING THE REMAINING FILES${NC}"
+rsync -a --exclude={'.git','app','bootstrap','public','vendor','.env*','artisan','composer.*','package.json','package-lock.json','server.php'} $OLD_PROJECT_PATH/* $NEW_PROJECT_PATH/
+rsync -r --ignore-existing $OLD_PROJECT_PATH/*.md $NEW_PROJECT_PATH/
+cd $NEW_PROJECT_PATH && git add -A . && git commit -m "Copy the remaining files"
+
 
 #cd $NEW_PROJECT_PATH && composer require cartalyst/sentry:dev-feature/laravel-5 \
 #  && php artisan vendor:publish --provider="Cartalyst\Sentry\SentryServiceProvider" \
