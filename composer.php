@@ -30,10 +30,10 @@ foreach ($require as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else if ($package === 'cartalyst/sentry') {
-    $commands_to_execute[0] = $commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5";
-    array_push($commands_to_execute, "php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"");
+    shell_exec($commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5");
+    shell_exec("php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"");
   } else {
-    $commands_to_execute[0] = $commands_to_execute[0]." ".$package;
+    shell_exec($commands_to_execute[0]." ".$package);
   }
 }
 
@@ -41,12 +41,8 @@ foreach ($require_dev as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else {
-    $commands_to_execute[1] = $commands_to_execute[1]." ".$package;
+    shell_exec($commands_to_execute[1]." ".$package);
   }
-}
-
-foreach ($commands_to_execute as $command) {
-  shell_exec($command);
 }
 
 ?>
