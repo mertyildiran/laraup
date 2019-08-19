@@ -8,6 +8,13 @@ $filters_php = preg_replace('/^.+\n/', '', $filters_php);
 eval($filters_php);
 
 
+function applyTheFixes($line)
+{
+  $line = str_replace('App::bind', '$this->app->bind', $line);
+  $line = str_replace('$request->', 'request()->', $line);
+  return $line;
+}
+
 function getLineWithString($fileName, $str) {
     $lines = file($fileName);
     foreach ($lines as $lineNumber => $line) {
@@ -38,7 +45,7 @@ function handleAppFilter(Closure $closure, $is_before)
   $route_service_provider = file($route_service_provider_path);
   $lines = file($filters_php_path);
   for ($i = $startline; $i <= $endline; $i++) {
-    $lines[$i] = str_replace('App::bind', '$this->app->bind', $lines[$i]);
+    $lines[$i] = applyTheFixes($lines[$i]);
     array_splice($route_service_provider, $parent_boot_line_number - $sign, 0, "\t".$lines[$i]);
     $parent_boot_line_number += $sign;
   }
