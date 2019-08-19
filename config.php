@@ -37,12 +37,7 @@ $lines = file($new_app_php_path);
 
 foreach ($config as $key => $value) {
   if (! in_array($key, $standard_keys)) {
-    $write = "";
-    if (is_string($value)) {
-      $write = "\t'".$key."' => '".$value."',\n"; 
-    } else {
-      $write = "\t'".$key."' => ".$value.",\n"; 
-    }
+    $write = "\t'".$key."' => ".var_export($value, true).",\n"; 
     array_splice($lines, $line_number_end_of_file - 1, 0, $write);
     $line_number_end_of_file++;
   }
