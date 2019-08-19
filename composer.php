@@ -12,7 +12,10 @@ $new_composer_json_content = file_get_contents($new_composer_json_file_path);
 $old_composer_array = json_decode($old_composer_json_content, true);
 $new_composer_array = json_decode($new_composer_json_content, true);
 
-$new_composer_array['repositories'] = $old_composer_array['repositories'];
+$key = 'repositories';
+if (array_key_exists($key, $old_composer_array)) {
+  $new_composer_array[$key] = $old_composer_array[$key];
+}
 file_put_contents($new_composer_json_file_path, json_encode($new_composer_array, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
 $require = $old_composer_array['require'];
