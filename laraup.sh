@@ -194,6 +194,11 @@ php $LARAUP_DIR/config.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
 git_commit "Fix config/app.php file"
 
 
+section_title "APPLYING SOME ADDITIONAL FIXES IN GENERAL"
+find $NEW_PROJECT_PATH/app/ $NEW_PROJECT_PATH/resources/ -type f -name '*.php' -exec perl -pi -e 's/->lists\((.*?)\)/->pluck(\1)->toArray()/g' {} +
+git_commit "Replace lists() with pluck()->toArray()"
+
+
 section_title "COPYING THE REMAINING FILES"
 rsync -a --exclude={'.git','app','bootstrap','public','vendor','.env*','artisan','composer.*','package.json','package-lock.json','server.php'} $OLD_PROJECT_PATH/* $NEW_PROJECT_PATH/
 rsync -r --ignore-existing $OLD_PROJECT_PATH/*.md $NEW_PROJECT_PATH/
