@@ -44,7 +44,7 @@ echo -e "Path to new Laravel 5.8 project:\t${GREEN}${NEW_PROJECT_PATH}${NC}\n"
 
 cd $OLD_PROJECT_PATH && composer install
 
-composer create-project --prefer-dist laravel/laravel $NEW_PROJECT_PATH || die "New Laravel project cloudn't be created, check the above message or your composer installation"
+composer create-project --prefer-dist laravel/laravel=5.8.17 $NEW_PROJECT_PATH || die "New Laravel project cloudn't be created, check the above message or your composer installation"
 cp -r $OLD_PROJECT_PATH/.git $NEW_PROJECT_PATH && cd $NEW_PROJECT_PATH && git checkout -b laravel-5-upgrade && git_commit "Bring in Laravel 5.8 base"
 
 
