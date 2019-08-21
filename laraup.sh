@@ -195,8 +195,13 @@ git_commit "Fix config/app.php file"
 
 
 section_title "APPLYING SOME ADDITIONAL FIXES IN GENERAL"
+
 find $NEW_PROJECT_PATH/app/ $NEW_PROJECT_PATH/resources/ -type f -name '*.php' -exec perl -pi -e 's/->lists\((.*?)\)/->pluck(\1)->toArray()/g' {} +
 git_commit "Replace lists() with pluck()->toArray()"
+
+find $NEW_PROJECT_PATH/ -type f -name '*.php' -exec perl -pi -e 's/Cache::put\((.*),\s?(.*?)\)/Cache::put($1, \\Carbon\\Carbon::now()->addMinutes($2))/g' {} +
+find $NEW_PROJECT_PATH/ -type f -name '*.php' -exec perl -pi -e 's/Cache::remember\((.*?),\s?(.*?),\s?function/Cache::remember($1, \\Carbon\\Carbon::now()->addMinutes($2), function/g' {} +
+git_commit "Fix the Cache TTL change"
 
 
 section_title "COPYING THE REMAINING FILES"

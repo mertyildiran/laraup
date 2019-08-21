@@ -1,6 +1,6 @@
-# LaraUp
+![](https://i.ibb.co/smXgLXj/cover.png)
 
-Automatically upgrades your old Laravel 4.2 project to 5.8
+**LaraUp** automatically upgrades your old Laravel 4.2 project to 5.8
 
 ### Usage
 
