@@ -1,5 +1,11 @@
 <?php
 
+$publishings = [
+  'cartalyst/sentry'                => "php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"",
+  'barryvdh/laravel-ide-helper'     => "php artisan vendor:publish --provider=\"Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider\" --tag=config",
+  'maatwebsite/excel'               => "php artisan vendor:publish --provider=\"Maatwebsite\Excel\ExcelServiceProvider\""
+];
+
 $old_project_path = $argv[1];
 $new_project_path = $argv[2];
 
@@ -30,10 +36,9 @@ foreach ($require as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else if ($package === 'cartalyst/sentry') {
-    shell_exec($commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5");
-    shell_exec("php artisan vendor:publish --provider=\"Cartalyst\Sentry\SentryServiceProvider\"");
+    executeInstall($package, $commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5");
   } else {
-    shell_exec($commands_to_execute[0]." ".$package);
+    executeInstall($package, $commands_to_execute[0]." ".$package);
   }
 }
 
@@ -41,7 +46,17 @@ foreach ($require_dev as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else {
-    shell_exec($commands_to_execute[1]." ".$package);
+    executeInstall($package, $commands_to_execute[1]." ".$package);
+  }
+}
+
+function executeInstall($package, $command)
+{
+  global $publishings;
+
+  shell_exec($command);
+  if (array_key_exists($package, $publishings)) {
+    shell_exec($publishings[$package]);
   }
 }
 

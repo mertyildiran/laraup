@@ -187,7 +187,7 @@ git_commit "Copy .env files"
 
 
 section_title "COPYING THE CONFIGURATION FILES"
-rsync -r --ignore-existing $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php
+rsync -r --ignore-existing $OLD_PROJECT_PATH/app/config/* $NEW_PROJECT_PATH/config/ --exclude=/app.php --exclude/packages/
 git_commit "Copy the configuration files"
 
 php $LARAUP_DIR/config.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
