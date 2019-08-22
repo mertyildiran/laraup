@@ -140,7 +140,7 @@ git_commit "Fix the additional issues in the controllers"
 cd $NEW_PROJECT_PATH && composer dump-autoload || die "\nNew Composer packages couldn't be installed because \"composer dump-autoload\" is failed. Fix this issue and continue to run ${LARAUP_DIR}/laraup.sh from line: ${LINENO}"
 section_title "INSTALLING NEW COMPOSER PACKAGES"
 echo_warning "CAUTION: Run ssh-add otherwise it will keep asking to enter your passphrase a few times in case of secret repositories."
-php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
+#php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
 git_commit "Install new Composer packages"
 
 
@@ -202,6 +202,12 @@ git_commit "Replace lists() with pluck()->toArray()"
 find $NEW_PROJECT_PATH/ -type f -name '*.php' -exec perl -pi -e 's/Cache::put\((.*),\s?(.*?)\)/Cache::put($1, \\Carbon\\Carbon::now()->addMinutes($2))/g' {} +
 find $NEW_PROJECT_PATH/ -type f -name '*.php' -exec perl -pi -e 's/Cache::remember\((.*?),\s?(.*?),\s?function/Cache::remember($1, \\Carbon\\Carbon::now()->addMinutes($2), function/g' {} +
 git_commit "Fix the Cache TTL change"
+
+if [ -d "$OLD_PROJECT_PATH/app/support" ]; then
+  mkdir -p $NEW_PROJECT_PATH/app/Support
+  cp -r $OLD_PROJECT_PATH/app/support/* $NEW_PROJECT_PATH/app/Support
+  git_commit "Copy the files under app/Support directory"
+fi
 
 
 section_title "COPYING THE REMAINING FILES"
