@@ -140,7 +140,7 @@ git_commit "Fix the additional issues in the controllers"
 cd $NEW_PROJECT_PATH && composer dump-autoload || die "\nNew Composer packages couldn't be installed because \"composer dump-autoload\" is failed. Fix this issue and continue to run ${LARAUP_DIR}/laraup.sh from line: ${LINENO}"
 section_title "INSTALLING NEW COMPOSER PACKAGES"
 echo_warning "CAUTION: Run ssh-add otherwise it will keep asking to enter your passphrase a few times in case of secret repositories."
-#php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
+php $LARAUP_DIR/composer.php $OLD_PROJECT_PATH $NEW_PROJECT_PATH
 git_commit "Install new Composer packages"
 
 
