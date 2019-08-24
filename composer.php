@@ -36,7 +36,7 @@ foreach ($require as $package => $version) {
   if (in_array($package, ['php', 'laravel/framework'])) {
     continue;
   } else if ($package === 'cartalyst/sentry') {
-    executeInstall($package, $commands_to_execute[0]." cartalyst/sentry:dev-feature/laravel-5");
+    executeInstall($package, $commands_to_execute[0]." mertyildiran/sentry:dev-master");
   } else {
     executeInstall($package, $commands_to_execute[0]." ".$package);
   }
