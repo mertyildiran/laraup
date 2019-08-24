@@ -207,6 +207,9 @@ if [ -d "$OLD_PROJECT_PATH/app/support" ]; then
   mkdir -p $NEW_PROJECT_PATH/app/Support
   cp -r $OLD_PROJECT_PATH/app/support/* $NEW_PROJECT_PATH/app/Support
   git_commit "Copy the files under app/Support directory"
+
+  find $NEW_PROJECT_PATH/app/Support/ -type f -name '*.php' -exec sed -i 's/bindShared(/singleton(/g' {} +
+  git_commit "Replace removed bindShared() methods with singleton() under app/Support directory"
 fi
 
 
