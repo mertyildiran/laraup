@@ -6,6 +6,11 @@ $publishings = [
   'maatwebsite/excel'               => "php artisan vendor:publish --provider=\"Maatwebsite\Excel\ExcelServiceProvider\""
 ];
 
+$package_replacements = [
+  'cartalyst/sentry'        => 'mertyildiran/sentry:dev-master',
+  'bcalik/l4shell'          => 'mertyildiran/l5shell:dev-master'
+];
+
 $old_project_path = $argv[1];
 $new_project_path = $argv[2];
 
@@ -33,20 +38,24 @@ $commands_to_execute = [
 ];
 
 foreach ($require as $package => $version) {
-  if (in_array($package, ['php', 'laravel/framework'])) {
-    continue;
-  } else if ($package === 'cartalyst/sentry') {
-    executeInstall($package, $commands_to_execute[0]." mertyildiran/sentry:dev-master");
-  } else {
-    executeInstall($package, $commands_to_execute[0]." ".$package);
-  }
+  evaluatePackage($package, 0);
 }
 
 foreach ($require_dev as $package => $version) {
+  evaluatePackage($package, 1);
+}
+
+function evaluatePackage($package, $dev)
+{
+  global $package_replacements;
+  global $commands_to_execute;
+
   if (in_array($package, ['php', 'laravel/framework'])) {
-    continue;
+    return;
+  } else if (array_key_exists($package, $package_replacements)) {
+    executeInstall($package, $commands_to_execute[$dev]." ".$package_replacements[$package]);
   } else {
-    executeInstall($package, $commands_to_execute[1]." ".$package);
+    executeInstall($package, $commands_to_execute[$dev]." ".$package);
   }
 }
 

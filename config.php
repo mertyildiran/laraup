@@ -34,7 +34,8 @@ $standard_keys = [
 ];
 
 $provider_replacements = [
-  'BackupManager\Laravel\Laravel4ServiceProvider' => 'BackupManager\Laravel\Laravel55ServiceProvider'
+  'BackupManager\Laravel\Laravel4ServiceProvider' => 'BackupManager\Laravel\Laravel55ServiceProvider',
+  'Netson\L4shell\L4shellServiceProvider'         => ''
 ];
 
 $lines = file($new_app_php_path);
@@ -49,9 +50,6 @@ foreach ($config as $key => $value) {
 
 foreach ($config['aliases'] as $key => $value) {
   if (substr($value, 0, strlen('Illuminate')) !== 'Illuminate') {
-    if (array_key_exists($value, $provider_replacements)) {
-      $value = $provider_replacements[$value];
-    }
     array_splice($lines, $line_number_end_of_aliases - 1, 0, "\t\t'".$key."' => ".$value."::class,\n");
     $line_number_end_of_aliases++;
   }
@@ -67,8 +65,15 @@ $line_number_end_of_aliases++;
 
 foreach ($config['providers'] as $value) {
   if (substr($value, 0, strlen('Illuminate')) !== 'Illuminate') {
-    array_splice($lines, $line_number_end_of_providers - 1, 0, "\t\t".$value."::class,\n");
-    $line_number_end_of_providers++;
+    if (array_key_exists($value, $provider_replacements)) {
+      error_log($value);
+      $value = $provider_replacements[$value];
+      error_log($value);
+    }
+    if (! empty($value)) {
+      array_splice($lines, $line_number_end_of_providers - 1, 0, "\t\t".$value."::class,\n");
+      $line_number_end_of_providers++;
+    }
   }
 }
 
