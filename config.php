@@ -39,6 +39,10 @@ $provider_replacements = [
   'Kmd\Logviewer\LogviewerServiceProvider'        => 'Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider'
 ];
 
+$alias_replacements = [
+  'LucaDegasperi\OAuth2Server\Facades\AuthorizerFacade' => 'LucaDegasperi\OAuth2Server\Facades\Authorizer'
+];
+
 $lines = file($new_app_php_path);
 
 foreach ($config as $key => $value) {
@@ -51,6 +55,9 @@ foreach ($config as $key => $value) {
 
 foreach ($config['aliases'] as $key => $value) {
   if (substr($value, 0, strlen('Illuminate')) !== 'Illuminate') {
+    if (array_key_exists($value, $alias_replacements)) {
+      $value = $alias_replacements[$value];
+    }
     array_splice($lines, $line_number_end_of_aliases - 1, 0, "\t\t'".$key."' => ".$value."::class,\n");
     $line_number_end_of_aliases++;
   }

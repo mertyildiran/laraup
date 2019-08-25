@@ -7,9 +7,10 @@ $publishings = [
 ];
 
 $package_replacements = [
-  'cartalyst/sentry'                => 'mertyildiran/sentry:dev-master',
-  '*/l4shell'                       => 'mertyildiran/l5shell:dev-master',
-  '*/kmd-logviewer|*/logviewer'     => 'rap2hpoutre/laravel-log-viewer'
+  'cartalyst/sentry'                      => 'mertyildiran/sentry:dev-master',
+  '*/l4shell'                             => 'mertyildiran/l5shell:dev-master',
+  '*/kmd-logviewer|*/logviewer'           => 'rap2hpoutre/laravel-log-viewer',
+  'lucadegasperi/oauth2-server-laravel'   => 'mertyildiran/oauth2-server-laravel:dev-master'
 ];
 
 $old_project_path = $argv[1];
