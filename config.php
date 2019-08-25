@@ -35,7 +35,8 @@ $standard_keys = [
 
 $provider_replacements = [
   'BackupManager\Laravel\Laravel4ServiceProvider' => 'BackupManager\Laravel\Laravel55ServiceProvider',
-  'Netson\L4shell\L4shellServiceProvider'         => ''
+  'Netson\L4shell\L4shellServiceProvider'         => '',
+  'Kmd\Logviewer\LogviewerServiceProvider'        => 'Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider'
 ];
 
 $lines = file($new_app_php_path);
@@ -66,9 +67,7 @@ $line_number_end_of_aliases++;
 foreach ($config['providers'] as $value) {
   if (substr($value, 0, strlen('Illuminate')) !== 'Illuminate') {
     if (array_key_exists($value, $provider_replacements)) {
-      error_log($value);
       $value = $provider_replacements[$value];
-      error_log($value);
     }
     if (! empty($value)) {
       array_splice($lines, $line_number_end_of_providers - 1, 0, "\t\t".$value."::class,\n");

@@ -7,8 +7,9 @@ $publishings = [
 ];
 
 $package_replacements = [
-  'cartalyst/sentry'        => 'mertyildiran/sentry:dev-master',
-  'bcalik/l4shell'          => 'mertyildiran/l5shell:dev-master'
+  'cartalyst/sentry'                => 'mertyildiran/sentry:dev-master',
+  '*/l4shell'                       => 'mertyildiran/l5shell:dev-master',
+  '*/kmd-logviewer|*/logviewer'     => 'rap2hpoutre/laravel-log-viewer'
 ];
 
 $old_project_path = $argv[1];
@@ -52,8 +53,11 @@ function evaluatePackage($package, $dev)
 
   if (in_array($package, ['php', 'laravel/framework'])) {
     return;
-  } else if (array_key_exists($package, $package_replacements)) {
-    executeInstall($package, $commands_to_execute[$dev]." ".$package_replacements[$package]);
+  }
+
+  $match = getFirstWildcardMatch($package, $package_replacements);
+  if (! is_null($match)) {
+    executeInstall($package, $commands_to_execute[$dev]." ".$match);
   } else {
     executeInstall($package, $commands_to_execute[$dev]." ".$package);
   }
@@ -64,9 +68,22 @@ function executeInstall($package, $command)
   global $publishings;
 
   shell_exec($command);
-  if (array_key_exists($package, $publishings)) {
-    shell_exec($publishings[$package]);
+  $match = getFirstWildcardMatch($package, $publishings);
+  if (! is_null($match)) {
+    shell_exec($match);
   }
+}
+
+function getFirstWildcardMatch($package, $array)
+{
+  foreach (array_keys($array) as $pattern) {
+    foreach (explode('|', $pattern) as $wildcard) {
+      if (fnmatch($wildcard, $package)) {
+        return $array[$pattern];
+      }
+    }
+  }
+  return NULL;
 }
 
 ?>
